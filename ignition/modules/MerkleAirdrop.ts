@@ -1,6 +1,6 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
-import users from "../../../users.json";
+import users from "../../users.json";
 
 const MerkleAirdropModule = buildModule("MerkleAirdropModule", (m) => {
     const tree = StandardMerkleTree.of(users.users, ["address", "uint256"]);
