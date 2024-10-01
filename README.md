@@ -1,14 +1,27 @@
-# Sample Hardhat Project
+# Airdrop App
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
-
-Try running some of the following tasks:
+## Testing
 
 ```shell
 npx hardhat help
 npx hardhat test
 REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/SamoyedCoin.ts
-npx hardhat ignition deploy ./ignition/modules/MerkleAirdrop.ts
 ```
+
+## Deploy
+
+1. Run to deploy the token
+```shell
+npx hardhat ignition deploy ./ignition/modules/SamoyedCoin.ts --network localhost
+```
+
+2. Change `CONTRACT_ADDRESS` with the address of the deployed token contract
+
+3. Run the airdrop contract
+```shell
+npx hardhat ignition deploy ./ignition/modules/MerkleAirdrop.ts --network localhost
+```
+
+4. Change the `AIRDROP_CONTRACT_ADDRESS` with the address of the deployed airdrop contract
+
+5. Run `node deployLocal.js` to set the airdrop contract address in the token contract
