@@ -39,6 +39,7 @@ contract MerkleAirdrop {
         uint256 total
     );
     error TransferFailed(string reason);
+    error ContractPaused();
 
     // Function to claim the assigned tokens using Merkle proof
     function claimTokens(
@@ -48,6 +49,11 @@ contract MerkleAirdrop {
     ) external {
         if (amountToMint == 0) {
             revert AmountMustBeGreaterThanZero();
+        }
+
+        // Check if the SamoyedCoin contract is not paused
+        if (Samoyedcoin(token).paused()) {
+            revert ContractPaused();
         }
 
         // Verify if the user can claim tokens
@@ -69,8 +75,6 @@ contract MerkleAirdrop {
             );
         }
 
-        // Update claimed amount and transfer tokens to the user
-        claimedAmounts[msg.sender] += amountToMint;
         console.log("About to mint");
         
         // Mint tokens to this contract first
@@ -99,6 +103,9 @@ contract MerkleAirdrop {
         }
 
         console.log("Transferred tokens to", msg.sender, amountToMint);
+
+        // Update claimed amount and transfer tokens to the user
+        claimedAmounts[msg.sender] += amountToMint;
         emit TokensClaimed(msg.sender, amountToMint);
     }
 }

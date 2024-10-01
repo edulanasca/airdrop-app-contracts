@@ -11,6 +11,8 @@ contract Samoyedcoin is ERC20, ERC20Pausable, Ownable, ERC20Permit {
     address public airdropContract;
     mapping(address => bool) public admins;
 
+    event AdminStatusChanged(address admin, bool isAdmin);
+
     constructor(address initialOwner)
         ERC20("Samoyedcoin", "SAMO")
         Ownable(initialOwner)
@@ -25,6 +27,7 @@ contract Samoyedcoin is ERC20, ERC20Pausable, Ownable, ERC20Permit {
 
     function setAdmin(address admin, bool isAdmin) external onlyOwner {
         admins[admin] = isAdmin;
+        emit AdminStatusChanged(admin, isAdmin);
     }
 
     function pause() public {
