@@ -4,18 +4,24 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./SamoyedCoin.sol";
 
-contract MerkleAirdrop {
+contract MerkleAirdrop is Pausable, Ownable {
     address public immutable token;
     bytes32 public immutable merkleRoot;
     mapping(address => uint256) public claimedAmounts;
+    mapping(address => bool) public admins;
 
     event TokensClaimed(address indexed claimant, uint256 amount);
+    event AdminAdded(address indexed admin);
+    event AdminRemoved(address indexed admin);
 
-    constructor(address _token, bytes32 _merkleRoot) {
+    constructor(address _token, bytes32 _merkleRoot) Ownable(msg.sender) {
         token = _token;
         merkleRoot = _merkleRoot;
+        admins[msg.sender] = true; // Set the contract deployer as an admin
     }
 
     // Function to verify if the user can claim tokens using the Merkle tree
@@ -40,6 +46,32 @@ contract MerkleAirdrop {
     );
     error TransferFailed(string reason);
     error ContractPaused();
+    error NotAdmin();
+
+    modifier onlyAdmin() {
+        if (!admins[msg.sender]) {
+            revert NotAdmin();
+        }
+        _;
+    }
+
+    function addAdmin(address newAdmin) public onlyOwner {
+        admins[newAdmin] = true;
+        emit AdminAdded(newAdmin);
+    }
+
+    function removeAdmin(address adminToRemove) public onlyOwner {
+        admins[adminToRemove] = false;
+        emit AdminRemoved(adminToRemove);
+    }
+
+    function pause() public onlyAdmin {
+        _pause();
+    }
+
+    function unpause() public onlyAdmin {
+        _unpause();
+    }
 
     // Function to claim the assigned tokens using Merkle proof
     function claimTokens(
@@ -47,13 +79,12 @@ contract MerkleAirdrop {
         uint256 amountToMint,
         bytes32[] memory proof
     ) external {
-        if (amountToMint == 0) {
-            revert AmountMustBeGreaterThanZero();
+        if (paused()) {
+            revert ContractPaused();
         }
 
-        // Check if the SamoyedCoin contract is not paused
-        if (Samoyedcoin(token).paused()) {
-            revert ContractPaused();
+        if (amountToMint == 0) {
+            revert AmountMustBeGreaterThanZero();
         }
 
         // Verify if the user can claim tokens

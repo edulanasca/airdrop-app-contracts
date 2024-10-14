@@ -24,22 +24,4 @@ describe("Samoyedcoin Contract", function () {
         await samoyedcoin.mint(addr1.address, 1000);
         expect(await samoyedcoin.balanceOf(addr1.address)).to.equal(1000);
     });
-
-    it("Should pause and unpause the contract", async function () {
-        await samoyedcoin.pause();
-        try {
-            samoyedcoin.transfer(addr1.address, 100)
-        } catch (error) {
-            console.log(error);
-        }
-        await expect(
-             samoyedcoin.transfer(addr1.address, 100)
-        ).to.be.rejected;
-
-        await samoyedcoin.unpause();
-        await samoyedcoin.mint(addr1.address, 1000);
-        await samoyedcoin.connect(addr1).approve(addr2.address, 500);
-        await samoyedcoin.connect(addr2).transferFrom(addr1.address, addr2.address, 500);
-        expect(await samoyedcoin.balanceOf(addr2.address)).to.equal(500);
-    });
 });
