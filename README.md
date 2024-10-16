@@ -25,3 +25,13 @@ npx hardhat ignition deploy ./ignition/modules/MerkleAirdrop.ts --network localh
 4. Change the `AIRDROP_CONTRACT_ADDRESS` with the address of the deployed airdrop contract
 
 5. Run `node deployLocal.js` to set the airdrop contract address in the token contract
+
+Run scripts
+```shell
+npx hardhat run scripts/estimate-deploy.ts --network holesky
+```
+
+If you want to re deploy contract, run again deploy after wiping
+```shell
+npx hardhat ignition wipe chain-xxx MerkleAirdropModule#MerkleAirdrop
+```

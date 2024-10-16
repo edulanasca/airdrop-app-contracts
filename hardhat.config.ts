@@ -7,7 +7,7 @@ const config: HardhatUserConfig = {
   solidity: "0.8.24",
   networks: {
     holesky: {
-      url: "https://ethereum-rpc.publicnode.com",
+      url: "https://rpc-holesky.rockx.com",
       accounts: [HOLESKY_PRIVATE_KEY],
     }
   }
